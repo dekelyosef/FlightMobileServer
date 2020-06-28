@@ -21,6 +21,7 @@ namespace FlightMobileWeb.Controllers
 
 
         [HttpPost]
+        [Consumes("application/json")]
         public async Task<ActionResult> PostFlightPlan([FromBody]Command command)
         {
             if (!manager.IsValid(command))
@@ -31,11 +32,11 @@ namespace FlightMobileWeb.Controllers
             try
             {
                 manager.SetNewCommand(command);
-                return await Task.FromResult(StatusCode(200));
+                return await Task.FromResult(Ok(command));
             }
             catch
             {
-                return await Task.FromResult(StatusCode(200));
+                return await Task.FromResult(StatusCode(500));
             }
         }
     }

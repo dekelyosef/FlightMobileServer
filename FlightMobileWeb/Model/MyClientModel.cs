@@ -55,19 +55,27 @@ namespace FlightMobileWeb.Model
         {
             lock (lockObj)
             {
-                Stopwatch stopWatch = new Stopwatch();
-                stopWatch.Start();
                 byte[] bytes = new byte[1024];
-                int bytesRead = this.stream.Read(bytes, 0, bytes.Length);
-                // Checks if 10 seconds pass
-                if (stopWatch.ElapsedMilliseconds > 10000)
+                int bytesRead;
+                try
                 {
-                    return Encoding.ASCII.GetString(bytes, 0, bytesRead);
+                    bytesRead = stream.Read(bytes, 0, bytes.Length);
                 }
-                else
+                catch (Exception exception)
                 {
-                    return null;
+                    if (exception.Message.Contains("time"))
+                    {
+                        throw new TimeoutException(exception.Message);
+                    }
+                    throw;
                 }
+
+                if (bytesRead == 0)
+                {
+                    throw new Exception("couldn't read from server");
+                }
+
+                return Encoding.ASCII.GetString(bytes, 0, bytesRead);
             }
         }
 
@@ -79,12 +87,26 @@ namespace FlightMobileWeb.Model
         {
             lock (lockObj)
             {
-                //convert the command string to an array of bytes and sent to the server
-                byte[] buffer = Encoding.ASCII.GetBytes(command);
-                this.stream.Write(buffer, 0, buffer.Length);
-                this.stream.Flush();
+                //convert the command string to an array of bytes and sent to the server  
+                byte[] bytes = Encoding.ASCII.GetBytes(command);
+
+                try
+                {
+                    stream.Write(bytes, 0, bytes.Length);
+                }
+                catch (Exception exception)
+
+                {
+                    // catch time out exception
+                    if (exception.Message.Contains("time"))
+                    {
+                        throw new TimeoutException(exception.Message);
+                    }
+                    throw;
+                }
             }
         }
+
 
     }
 }

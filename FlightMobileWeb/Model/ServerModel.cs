@@ -236,13 +236,22 @@ namespace FlightMobileWeb.Model
             client.Write(msg);
             // read from simulator
             string returnVal = client.Read();
+
+
             // checks if the value was set
-            if (returnVal != null && !returnVal.Equals(value))
+            if (returnVal.Equals(null))
+            {
+                AddStatement("Error in reading from simulator");
+                return false;
+            } else if (float.Parse(returnVal) == float.Parse(value))
+            {
+                return true;
+            } else
             {
                 AddStatement("Error in setting the given value");
                 return false;
+
             }
-            return true;
         }
 
     }
