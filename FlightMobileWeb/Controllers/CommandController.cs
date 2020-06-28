@@ -2,46 +2,42 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FlightMobileApp.Model;
+using FlightMobileWeb.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FlightMobileApp.Controllers
+namespace FlightMobileWeb.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class CommandController : ControllerBase
     {
-        private readonly IServerModel myServer;
+        private readonly CommandManager manager;
 
-
-        /**
-         * Constructor
-         **/
-        public CommandController(IServerModel serverModel)
+        public CommandController(CommandManager m)
         {
-            myServer = serverModel;
+            manager = m;
         }
 
 
-        // POST: api/Command
         [HttpPost]
-        public ActionResult Post(Command command)
+        public async Task<ActionResult> PostFlightPlan([FromBody]Command command)
         {
-            if (!CommandManager.IsValid(command))
+            if (!manager.IsValid(command))
             {
                 return NotFound();
+
             }
             try
             {
-                CommandManager.SetNewCommand(myServer, command);
-                return Ok();
+                manager.SetNewCommand(command);
+                return await Task.FromResult(StatusCode(200));
             }
-            catch (Exception)
+            catch
             {
-                return NotFound();
+                return await Task.FromResult(StatusCode(200));
             }
         }
-
     }
+
 }

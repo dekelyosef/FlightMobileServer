@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlightMobileApp.Model
+namespace FlightMobileWeb.Model
 {
     public class MyClientModel : IClientModel
     {

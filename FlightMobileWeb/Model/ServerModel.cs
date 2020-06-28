@@ -8,7 +8,7 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FlightMobileApp.Model
+namespace FlightMobileWeb.Model
 {
     public class ServerModel : IServerModel
     {
@@ -38,18 +38,12 @@ namespace FlightMobileApp.Model
             m = new Mutex();
             client = new MyClientModel();
 
-            //Ip = ConfigurationManager.AppSettings["IP"].ToString();
-            //Port = ConfigurationManager.AppSettings["Port"].ToString();
-
-            //Ip = config.GetConnectionString("ip");
-            //Port = config.GetConnectionString("socketPort");
-
             Ip = config.GetValue<string>("Connections:ip");
             Port = config.GetValue<string>("Connections:socketPort");
+
             Connect();
             client.Write("data\n");
         }
-
 
 
         /**

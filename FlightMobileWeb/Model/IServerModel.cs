@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FlightMobileApp.Model
+namespace FlightMobileWeb.Model
 {
     public interface IServerModel : INotifyPropertyChanged
     {
@@ -18,11 +18,5 @@ namespace FlightMobileApp.Model
         string Port { set; get; }
         // notification
         string Note { set; get; }
-        //string NoteColor { set; get; }
-        // controls
-        //double Aileron { set; get; }
-        //double Rudder { set; get; }
-        //double Elevator { set; get; }
-        //double Throttle { set; get; }
     }
 }
