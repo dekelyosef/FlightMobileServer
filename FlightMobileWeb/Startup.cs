@@ -46,6 +46,7 @@ namespace FlightMobileWeb
             //services.AddScoped<ScreenshotController>(new ScreenshotController(Configuration, client);
             services.AddRouting();
             services.AddSingleton<CommandManager>(new CommandManager(Configuration));
+            services.AddSingleton<ScreenshotManager>(new ScreenshotManager(Configuration));
             //services.AddSingleton(typeof(CommandManager), typeof(CommandManager));
 
 
