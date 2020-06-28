@@ -28,15 +28,5 @@ namespace FlightMobileWeb.Model
             url = "http://" + screenshot.Ip + ":" + screenshot.Port + "/screenshot";
         }
 
-
-        /**
-         * Set new screenshot's properties
-         **/
-        public void SetProperties(IConfiguration config)
-        {
-            screenshot.Ip = config.GetValue<string>("Connections:ip");
-            screenshot.Port = config.GetValue<string>("Connections:httpPort");
-        }
-
     }
 }

@@ -15,9 +15,8 @@ namespace FlightMobileWeb.Controllers
     [ApiController]
     public class ScreenshotController : ControllerBase
     {
-        private ScreenshotManager manager;
+        private readonly ScreenshotManager manager;
         private readonly HttpClient client;
-        private readonly string url;
 
 
         public ScreenshotController(ScreenshotManager m)
