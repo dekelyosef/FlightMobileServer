@@ -11,18 +11,31 @@ using Microsoft.Extensions.Configuration;
 
 namespace FlightMobileWeb.Controllers
 {
-    [Route("/screenshot")]
+    [Route("screenshot")]
     [ApiController]
     public class ScreenshotController : ControllerBase
     {
         private readonly ScreenshotManager manager;
         private readonly HttpClient client;
 
+<<<<<<< HEAD
+        public ScreenshotController(IConfiguration conf, HttpClient clientFactory)
+        {
+            client = clientFactory;
+            //client = clientFactory.CreateClient("screenshot");
+            client.Timeout = TimeSpan.FromSeconds(10);
+
+            string ip = conf.GetValue<string>("Connections:ip");
+            string port = conf.GetValue<string>("Connections:httpPort");
+
+            url = "http://" + ip + ":" + port + "/screenshot";
+=======
         public ScreenshotController(ScreenshotManager m)
         {
             client = new HttpClient();
             client.Timeout = TimeSpan.FromSeconds(10);
             manager = m;
+>>>>>>> 039aeab43ebc2ffc7b7757286bd3171354d335af
         }
 
 

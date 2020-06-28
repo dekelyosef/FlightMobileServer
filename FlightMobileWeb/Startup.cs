@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FlightMobileWeb.Controllers;
 using FlightMobileWeb.Model;
@@ -39,7 +40,10 @@ namespace FlightMobileWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //HttpClient client = new HttpClient();
             services.AddControllers();
+            //services.AddSingleton<ScreenshotController>(new ScreenshotController(Configuration, client));
+            //services.AddScoped<ScreenshotController>(new ScreenshotController(Configuration, client);
             services.AddRouting();
             services.AddSingleton<CommandManager>(new CommandManager(Configuration));
             services.AddSingleton<ScreenshotManager>(new ScreenshotManager(Configuration));
@@ -55,6 +59,7 @@ namespace FlightMobileWeb
                     builder.AllowAnyHeader();
                 });
             });
+
 
             services.AddHttpClient("screenshot", client =>
                 client.DefaultRequestHeaders.Add("Accept", "application/json"));
