@@ -237,7 +237,7 @@ namespace FlightMobileWeb.Model
             // read from simulator
             string returnVal = client.Read();
             // checks if the value was set
-            if (!returnVal.Equals(value))
+            if (returnVal != null && !returnVal.Equals(value))
             {
                 AddStatement("Error in setting the given value");
                 return false;
