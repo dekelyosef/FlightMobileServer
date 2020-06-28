@@ -41,7 +41,8 @@ namespace FlightMobileWeb
         {
             services.AddControllers();
             services.AddRouting();
-            services.AddSingleton(typeof(CommandManager), typeof(CommandManager));
+            services.AddSingleton<CommandManager>(new CommandManager(Configuration));
+            //services.AddSingleton(typeof(CommandManager), typeof(CommandManager));
 
 
             services.AddCors(options =>
