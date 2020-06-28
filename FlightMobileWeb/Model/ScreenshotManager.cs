@@ -39,10 +39,9 @@ namespace FlightMobileWeb.Model
             {
                 using HttpClient client = new HttpClient
                 {
-                    //set time out for the request
+                    //set time out
                     Timeout = TimeSpan.FromSeconds(10)
                 };
-                // request the screenshot from client
                 bytes = await client.GetAsync(url);
             }
             catch (Exception)
