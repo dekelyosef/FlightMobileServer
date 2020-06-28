@@ -15,18 +15,15 @@ namespace FlightMobileWeb.Controllers
     [ApiController]
     public class ScreenshotController : ControllerBase
     {
+        private ScreenshotManager manager;
         private readonly HttpClient client;
         private readonly string url;
 
-        public ScreenshotController(IConfiguration conf, IHttpClientFactory clientFactory)
+        public ScreenshotController(ScreenshotManager m)
         {
-            client = clientFactory.CreateClient("screenshot");
+            client = new HttpClient();
             client.Timeout = TimeSpan.FromSeconds(10);
-
-            string ip = conf.GetValue<string>("ip");
-            string port = conf.GetValue<string>("Connections:httpPort");
-
-            url = "http://" + ip + ":" + port + "/screenshot";
+            manager = m;
         }
 
 
@@ -36,21 +33,22 @@ namespace FlightMobileWeb.Controllers
             HttpResponseMessage response;
             try
             {
-                response = await client.GetAsync(url);
+                response = await manager.client.GetAsync(manager.url);
                 if (!response.IsSuccessStatusCode)
                 {
-                    return NotFound("couldn't get screenshot from the simulator");
+                    return NotFound("couldn't get screenshot");
                 }
             }
             catch
             {
-                return NotFound("couldn't get screenshot from the simulator");
+                return NotFound("couldn't get screenshot");
             }
 
-            var content = response.Content;
-            var bytes = await content.ReadAsByteArrayAsync();
 
-            return File(bytes, "image/jpeg");
+            var content = response.Content;
+            var screenshot = await content.ReadAsByteArrayAsync();
+
+            return File(screenshot, "image/jpeg");
         }
     }
 
