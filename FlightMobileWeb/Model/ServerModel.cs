@@ -42,7 +42,10 @@ namespace FlightMobileWeb.Model
             Port = config.GetValue<string>("Connections:socketPort");
 
             Connect();
-            client.Write("data\n");
+            if (IsConnect())
+            {
+                client.Write("data\n");
+            } 
         }
 
 
