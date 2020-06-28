@@ -1,20 +1,33 @@
-﻿using FlightMobileApp.Model;
+﻿using FlightMobileWeb.Model;
+using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Concurrent;
 
-namespace FlightMobileApp
+namespace FlightMobileWeb
 {
     public class CommandManager
     {
+        private readonly IClientModel client;
+        private readonly IServerModel serverModel;
+        private readonly IConfiguration configuration;
+        public string Ip { get; set; }
+        public int Port { get; set; }
+
         /**
          * Constructor
          **/
-        public CommandManager() { }
+        public CommandManager(IConfiguration conf)
+        {
+            configuration = conf;
+            client = new MyClientModel();
+            serverModel = new ServerModel(conf);
+        }
 
 
         /**
          * Checks if the command with valid parameters
          **/
-        public static bool IsValid(Command c)
+        public bool IsValid(Command c)
         {
             bool isThrottle = false;
 
@@ -42,7 +55,7 @@ namespace FlightMobileApp
         /**
          * Checks if the given value is in the range
          **/
-        public static bool IsInRange(double value, bool isThrottle)
+        public bool IsInRange(double value, bool isThrottle)
         {
             if (isThrottle)
             {
@@ -64,12 +77,12 @@ namespace FlightMobileApp
         /**
          * Set new command's values
          **/
-        public static void SetNewCommand(IServerModel myServer, Command command)
+        public void SetNewCommand(Command command)
         {
-            myServer.WriteAndRead("aileron", command.Aileron.ToString());
-            myServer.WriteAndRead("rudder", command.Rudder.ToString());
-            myServer.WriteAndRead("elevator", command.Elevator.ToString());
-            myServer.WriteAndRead("throttle", command.Throttle.ToString());
+            serverModel.WriteAndRead("aileron", command.Aileron.ToString());
+            serverModel.WriteAndRead("rudder", command.Rudder.ToString());
+            serverModel.WriteAndRead("elevator", command.Elevator.ToString());
+            serverModel.WriteAndRead("throttle", command.Throttle.ToString());
         }
     }
 }

@@ -5,12 +5,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace FlightMobileApp.Model
+namespace FlightMobileWeb.Model
 {
     public class ScreenshotManager
     {
         private static readonly Screenshot screenshot = new Screenshot();
-
 
         /**
          * Constructor
@@ -23,9 +22,6 @@ namespace FlightMobileApp.Model
          **/
         public static void SetProperties(IConfiguration config)
         {
-            //screenshot.Ip = config.GetConnectionString("ip");
-            //screenshot.Port = config.GetConnectionString("httpPort");
-
             screenshot.Ip = config.GetValue<string>("Connections:ip");
             screenshot.Port = config.GetValue<string>("Connections:httpPort");
         }
@@ -47,7 +43,7 @@ namespace FlightMobileApp.Model
                     Timeout = TimeSpan.FromSeconds(10)
                 };
                 // request the screenshot from client
-                bytes = await client.GetByteArrayAsync(url);
+                bytes = await client.GetAsync(url);
             }
             catch (Exception)
             {
