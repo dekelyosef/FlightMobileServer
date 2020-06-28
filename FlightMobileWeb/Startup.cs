@@ -43,6 +43,17 @@ namespace FlightMobileWeb
             services.AddRouting();
             services.AddSingleton(typeof(CommandManager), typeof(CommandManager));
 
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.AllowAnyOrigin();
+                    builder.AllowAnyMethod();
+                    builder.AllowAnyHeader();
+                });
+            });
+
             services.AddHttpClient("screenshot", client =>
                 client.DefaultRequestHeaders.Add("Accept", "application/json"));
         }
@@ -55,9 +66,15 @@ namespace FlightMobileWeb
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
+
+            app.UseDefaultFiles();
+
+            app.UseStaticFiles();
 
             app.UseAuthorization();
 
