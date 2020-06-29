@@ -196,37 +196,38 @@ namespace FlightMobileWeb.Model
         /**
          * Write to simulator and read from simulator
          **/
-        public void WriteAndRead(string control, string value)
+        public Boolean WriteAndRead(string control, string value)
         {
-            try
+            string msg = null;
+            // lock
+            mutex.WaitOne();
+            if (control.Equals("throttle"))
             {
-                // lock
-                mutex.WaitOne();
-                string msg = "set /controls/flight/" + control + " " + value + "\n";
-                // set command doesn't return value
-                client.Write(msg);
-                // checks if the value successfully set
-                WasSet(control, value);
-                // unlock
-                mutex.ReleaseMutex();
+                msg = "set /controls/engines/current-engine/throttle " + value + "\n";
             }
-            catch (Exception)
+            else
             {
-                AddStatement("Error in writing to simulator");
+                msg = "set /controls/flight/" + control + " " + value + "\n";
             }
+            // set command doesn't return value
+            client.Write(msg);
+            // unlock
+            mutex.ReleaseMutex();
+            // checks if the value successfully set
+            return WasSet(control, value);
         }
 
 
         /**
          * Checks if the given value was set
          **/
-        private bool WasSet(string control, string value)
+        private Boolean WasSet(string control, string value)
         {
             string msg;
             // get command to simulator
             if (control.Equals("throttle"))
             {
-                msg = "get /controls/engines/engine[0]/throttle\r\n";
+                msg = "get /controls/engines/current-engine/throttle\r\n";
             }
             else
             {
@@ -239,7 +240,7 @@ namespace FlightMobileWeb.Model
 
 
             // checks if the value was set
-            if (returnVal.Equals(null))
+            if (returnVal.Equals("ERR"))
             {
                 AddStatement("Error in reading from simulator");
                 return false;
@@ -250,7 +251,6 @@ namespace FlightMobileWeb.Model
             {
                 AddStatement("Error in setting the given value");
                 return false;
-
             }
         }
 

@@ -77,12 +77,35 @@ namespace FlightMobileWeb
         /**
          * Set new command's values
          **/
-        public void SetNewCommand(Command command)
+        public Boolean SetNewCommand(Command command)
         {
-            serverModel.WriteAndRead("aileron", command.Aileron.ToString());
-            serverModel.WriteAndRead("rudder", command.Rudder.ToString());
-            serverModel.WriteAndRead("elevator", command.Elevator.ToString());
-            serverModel.WriteAndRead("throttle", command.Throttle.ToString());
+            bool flag = true;
+
+            flag = serverModel.WriteAndRead("aileron", command.Aileron.ToString());
+            if (!flag)
+            {
+                return false;
+            }
+
+            flag = serverModel.WriteAndRead("rudder", command.Rudder.ToString());
+            if (!flag)
+            {
+                return false;
+            }
+
+            flag = serverModel.WriteAndRead("elevator", command.Elevator.ToString());
+            if (!flag)
+            {
+                return false;
+            }
+
+            flag = serverModel.WriteAndRead("throttle", command.Throttle.ToString());
+            if (!flag)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

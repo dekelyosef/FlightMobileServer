@@ -26,17 +26,15 @@ namespace FlightMobileWeb.Controllers
         {
             if (!manager.IsValid(command))
             {
-                return NotFound();
+                return await Task.FromResult(StatusCode(300));
 
             }
-            try
+            if (manager.SetNewCommand(command))
             {
-                manager.SetNewCommand(command);
                 return await Task.FromResult(Ok(command));
-            }
-            catch
+            } else
             {
-                return await Task.FromResult(StatusCode(500));
+                return await Task.FromResult(StatusCode(400));
             }
         }
     }
