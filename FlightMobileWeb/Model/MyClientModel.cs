@@ -107,6 +107,5 @@ namespace FlightMobileWeb.Model
             }
         }
 
-
     }
 }

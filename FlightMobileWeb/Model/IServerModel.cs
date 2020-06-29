@@ -12,7 +12,7 @@ namespace FlightMobileWeb.Model
         void Connect();
         void Disconnect();
         void AddStatement(string str);
-        Boolean WriteAndRead(string control, string value);
+        void WriteAndRead(string control, double value);
 
         string Ip { set; get; }
         string Port { set; get; }

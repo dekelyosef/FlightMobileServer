@@ -1,7 +1,9 @@
 ﻿using FlightMobileWeb.Model;
+using FlightMobileWeb.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace FlightMobileWeb
 {
@@ -10,6 +12,7 @@ namespace FlightMobileWeb
         private readonly IClientModel client;
         private readonly IServerModel serverModel;
         private readonly IConfiguration configuration;
+        private readonly BlockingCollection<AsyncCommand> commandsQueue;
         public string Ip { get; set; }
         public int Port { get; set; }
 
@@ -19,8 +22,10 @@ namespace FlightMobileWeb
         public CommandManager(IConfiguration conf)
         {
             configuration = conf;
+            commandsQueue = new BlockingCollection<AsyncCommand>();
             client = new MyClientModel();
             serverModel = new ServerModel(conf);
+            Task.Factory.StartNew(SendingCommands);
         }
 
 
@@ -74,38 +79,43 @@ namespace FlightMobileWeb
         }
 
 
-        /**
-         * Set new command's values
-         **/
-        public Boolean SetNewCommand(Command command)
+        public Task<Result> SetNewCommand(Command command)
         {
-            bool flag = true;
-
-            flag = serverModel.WriteAndRead("aileron", command.Aileron.ToString());
-            if (!flag)
-            {
-                return false;
-            }
-
-            flag = serverModel.WriteAndRead("rudder", command.Rudder.ToString());
-            if (!flag)
-            {
-                return false;
-            }
-
-            flag = serverModel.WriteAndRead("elevator", command.Elevator.ToString());
-            if (!flag)
-            {
-                return false;
-            }
-
-            flag = serverModel.WriteAndRead("throttle", command.Throttle.ToString());
-            if (!flag)
-            {
-                return false;
-            }
-
-            return true;
+            var asyncCommand = new AsyncCommand(command);
+            commandsQueue.Add(asyncCommand);
+            return asyncCommand.Task;
         }
+
+
+        private void SendingCommands()
+        {
+            foreach (AsyncCommand asyncCommand in commandsQueue.GetConsumingEnumerable())
+            {
+                Result result = Result.Ok;
+                try
+                {
+                    serverModel.WriteAndRead("aileron", asyncCommand.Command.Aileron);
+                    serverModel.WriteAndRead("rudder", asyncCommand.Command.Rudder);
+                    serverModel.WriteAndRead("elevator", asyncCommand.Command.Elevator);
+                    serverModel.WriteAndRead("throttle", asyncCommand.Command.Throttle);
+                }
+                catch (TimeoutException)
+                {
+                    // time out
+                    result = Result.TimeOut;
+                }
+                catch
+                {
+                    // error in writing or reading
+                    result = Result.NotFound;
+                }
+                asyncCommand.Completion.SetResult(result);
+            }
+        }
+
+
+
     }
+
+
 }

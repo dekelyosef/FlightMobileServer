@@ -15,10 +15,6 @@ namespace FlightMobileWeb.Model
         public MyClientModel client;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        //mutex
-        private readonly Mutex mutex;
-        private readonly Mutex m;
-
         public bool stop;
         public bool isConnect;
 
@@ -34,8 +30,6 @@ namespace FlightMobileWeb.Model
          **/
         public ServerModel(IConfiguration config)
         {
-            mutex = new Mutex();
-            m = new Mutex();
             client = new MyClientModel();
 
             Ip = config.GetValue<string>("Connections:ip");
@@ -45,7 +39,7 @@ namespace FlightMobileWeb.Model
             if (IsConnect())
             {
                 client.Write("data\n");
-            } 
+            }
         }
 
 
@@ -148,10 +142,7 @@ namespace FlightMobileWeb.Model
          **/
         public void AddStatement(string str)
         {
-            //mute
-            m.WaitOne();
             this.Note = str;
-            m.ReleaseMutex();
         }
 
 
@@ -196,11 +187,9 @@ namespace FlightMobileWeb.Model
         /**
          * Write to simulator and read from simulator
          **/
-        public Boolean WriteAndRead(string control, string value)
+        public void WriteAndRead(string control, double value)
         {
             string msg = null;
-            // lock
-            mutex.WaitOne();
             if (control.Equals("throttle"))
             {
                 msg = "set /controls/engines/current-engine/throttle " + value + "\n";
@@ -211,17 +200,18 @@ namespace FlightMobileWeb.Model
             }
             // set command doesn't return value
             client.Write(msg);
-            // unlock
-            mutex.ReleaseMutex();
             // checks if the value successfully set
-            return WasSet(control, value);
+            if (!WasSet(control, value))
+            {
+                throw new Exception();
+            }
         }
 
 
         /**
          * Checks if the given value was set
          **/
-        private Boolean WasSet(string control, string value)
+        private bool WasSet(string control, double value)
         {
             string msg;
             // get command to simulator
@@ -238,13 +228,12 @@ namespace FlightMobileWeb.Model
             // read from simulator
             string returnVal = client.Read();
 
-
             // checks if the value was set
             if (returnVal.Equals("ERR"))
             {
                 AddStatement("Error in reading from simulator");
                 return false;
-            } else if (float.Parse(returnVal) == float.Parse(value))
+            } else if (double.Parse(returnVal) == value)
             {
                 return true;
             } else

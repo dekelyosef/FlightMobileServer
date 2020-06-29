@@ -13,7 +13,6 @@ namespace FlightMobileWeb.Model
         public HttpClient client;
         public string url;
 
-
         /**
          * Constructor
          **/
